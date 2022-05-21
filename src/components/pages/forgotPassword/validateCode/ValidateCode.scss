@@ -1,0 +1,68 @@
+@import "../../../../styles/color.scss";
+
+#validateCode {
+  background-color: #fff;
+  height: 540px;
+  width: 500px;
+  text-align: center;
+  border-radius: 10px;
+
+  h2 {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .input-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-bottom: 40px;
+    gap: 30px;
+
+    .text-field {
+      width: 400px !important;
+    }
+  }
+
+  .btn {
+    width: 400px !important;
+    height: 50px !important;
+    border-radius: 150px;
+    background-color: $btn-1;
+    font-weight: bold;
+  }
+
+  .resend {
+    margin-top: 50px;
+  }
+
+  img {
+    margin-top: 30px;
+    width: 120px;
+  }
+
+  .note {
+    color: $green-2;
+    font-size: 15px;
+    background-color: $green-1;
+    width: 400px;
+    margin: 15px auto;
+    margin-top: 20px;
+    padding: 20px 10px;
+  }
+
+  .resend-text {
+    color: $btn-1;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 7px;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover {
+      text-shadow: 1px 1px 3px $yellow-1;
+    }
+  }
+}
