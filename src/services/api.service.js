@@ -1,6 +1,6 @@
 import axios from "axios";
 const moment = require('moment')
-const baseApi = "http://3.80.122.27:9002/api/";
+const baseApi = "https://4monce5w19.execute-api.us-east-2.amazonaws.com/api/";
 
 export default {
     auth(url = baseApi + "auth/") {
