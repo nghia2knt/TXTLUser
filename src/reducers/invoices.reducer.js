@@ -2,8 +2,11 @@ import { ACTION_TYPES } from "../actions/invoices.action";
 
 const initialState = {
     error: null,
-    time:null,
-    duration:0,
+    time:{
+      fromDate: Date.now(),
+      toDate: Date.now()+7200000
+    },
+    duration:parseFloat((7200000)/(3600000)).toFixed(0),
     selfInvoices: [],
 };
 

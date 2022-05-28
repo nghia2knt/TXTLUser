@@ -21,8 +21,8 @@ const columns = [
   { id: 'name', label: 'Tên', minWidth: 10 },
   { id: 'brand', label: 'Hãng xe', minWidth: 10 },
   { id: 'model', label: 'Mẫu', minWidth: 10 },
-  { id: 'licensePlate', label: 'Bản số xe', minWidth: 10 },
-  { id: 'transmission', label: 'Loại số', minWidth: 10 },
+  { id: 'licensePlate', label: 'Biển số', minWidth: 10 },
+  { id: 'transmission', label: 'Hộp số', minWidth: 10 },
   { id: 'engineType', label: 'Nhiên liệu', minWidth: 10 },
   { id: 'seats', label: 'Số ghế', minWidth: 10 },
   { id: 'image', label: 'Hình ảnh', minWidth: 10 },
@@ -51,6 +51,10 @@ const ListContent = () => {
   const onSelect = (id) => {
     dispatch(onLoadingTrue())
     dispatch(actions.getCar(id,navigate))
+  }
+
+  const onViewDetail = (id) => {
+    navigate("/cars/"+id)
   }
 
   return (
@@ -92,6 +96,8 @@ const ListContent = () => {
                   else if (column.id == 'id') {
                     return (
                       <TableCell key={column.id} align={column.align}>
+                                <Button variant="contained" color="primary" onClick={(e) => onViewDetail(value)}>Xem Chi Tiết</Button>                      
+
                                 <Button variant="contained" color="secondary" onClick={(e) => onSelect(value)}>THUÊ NGAY</Button>                      
                       </TableCell>
                     );

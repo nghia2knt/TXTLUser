@@ -18,6 +18,9 @@ import CreateInvoice from "./pages/createInvoice/CreateInvoice";
 import Calendar  from "./pages/calendar/Calendar";
 import Invoices from "./pages/invoices/Invoices";
 import Help from "./pages/help/Help";
+import CarInfo from "./pages/carInfo/CarInfo";
+import InvoiceInfo from "./pages/invoiceInfo/InvoiceInfo";
+import MessagePage from "./pages/message/MessagePage";
 
 const Router = () => {
   return useRoutes([
@@ -60,6 +63,11 @@ const Router = () => {
       children: [{ path: "", element: <ListCars /> }],
     },
     {
+      path: "/cars/:id",
+      element: <MainLayout />,
+      children: [{ path: "", element: <CarInfo /> }],
+    },
+    {
       path: "/user-profile",
       element: <MainLayout />,
       children: [
@@ -81,6 +89,16 @@ const Router = () => {
       path: "/invoices",
       element: <MainLayout />,
       children: [{ path: "", element: <Invoices/> }],
+    },
+    {
+      path: "/invoices/:id",
+      element: <MainLayout />,
+      children: [{ path: "", element: <InvoiceInfo/> }],
+    },
+    {
+      path: "/messages",
+      element: <MainLayout />,
+      children: [{ path: "", element: <MessagePage/> }],
     },
     {
       path: "/help",

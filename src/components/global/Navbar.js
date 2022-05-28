@@ -177,11 +177,20 @@ const ResponsiveAppBar = () => {
               >
                 Hướng Dẫn
               </Button>
-              
+             
           </Box>
+
+          <MenuItem key="message" onClick={() => {
+                  moveToPage("/messages");
+                }}>
+                  <Typography textAlign="center">Tin Nhắn</Typography>
+          </MenuItem>
+
           {userProfileHeader ? (    
           <div>
+           
           <Box sx={{ flexGrow: 0 }}>
+          
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />

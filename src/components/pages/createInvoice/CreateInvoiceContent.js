@@ -18,6 +18,7 @@ import Moment from "react-moment";
 import { KeyboardDateTimePicker } from "@material-ui/pickers";
 import CurrencyFormat from "react-currency-format";
 import { Alert } from "@material-ui/lab";
+import apiService from "../../../services/api.service";
 
 
 const CreateInvoiceContent = () => {
@@ -26,18 +27,17 @@ const CreateInvoiceContent = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
   const carInfo = useSelector((state) => state.cars.selectedCar);
   const time = useSelector((state) => state.invoices.time);
-  const [totalPrice, setTotalPrice] = useState('')
-  const [hourPrice, setHourPrice] = useState('')
+  const [votes, setVotes] = useState([])
   const duration = useSelector((state) => state.invoices.duration);
   const error = useSelector((state) => state.invoices.error);
 
   useEffect(() => {
-
     if (localStorage.getItem('jwt')) {
       dispatch(actions.getUserByJWT())
     }else {
       navigate("/login")
     }
+   
   }, [])
   const handleBeginDateChange = (date) => {
     time.fromDate = date
@@ -185,7 +185,7 @@ const CreateInvoiceContent = () => {
 
           </Grid>
           <Grid>
-          <Button variant="contained" color="secondary" onClick={(e) => onSend()}>THUÊ NGAY</Button>                      
+          <Button variant="contained" color="secondary" onClick={(e) => onSend()}>Xác Nhận Thuê</Button>                      
 
           </Grid>
         </Grid>

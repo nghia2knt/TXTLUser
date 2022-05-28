@@ -1,4 +1,5 @@
 import { Avatar, Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@material-ui/core";
+import { KeyboardDateTimePicker } from "@material-ui/pickers";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -26,10 +27,16 @@ const InvoicesContent = () => {
   const data = useSelector((state) => state.invoices.selfInvoices);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [beginDate, setBeginDate] = useState(Date.now()-(72000000*7))
+  const [endDate, setEndDate] = useState(Date.now());
   useEffect(() => {
     if (localStorage.getItem('jwt')) {
       dispatch(actions.getUserByJWT())
-      dispatch(getSelfInvoices())
+      const param = {
+        fromDate: beginDate,
+        toDate: endDate,
+      }
+      dispatch(getSelfInvoices(param))
     }else {
       navigate("/login")
     }
@@ -44,15 +51,57 @@ const InvoicesContent = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  const onSelect = (id) => {
+  const handleBeginDateChange = (date) => {
+    setBeginDate(date);
+  };
 
-   
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
+  };
+
+  const onSearch = () => {
+    const param = {
+      fromDate: beginDate,
+      toDate: endDate,
+    }
+    dispatch(actions.onLoadingTrue())
+    dispatch(getSelfInvoices(param))
   }
 
   return (
     <div id="invoicesContent">
       {userProfile && data &&(
         <Paper>
+          <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
+                          Danh Sách Lịch Đặt Thuê Xe
+          </Typography>
+          <KeyboardDateTimePicker
+          id="date-picker-dialog"
+          label="Ngày Tạo Từ"
+          format="dd-MM-yyyy hh:mm"
+          value={beginDate}
+          onChange={handleBeginDateChange}
+          KeyboardButtonProps={{
+            "aria-label": "change date",
+          }}
+          className="text-field"
+          invalidDateMessage="Ngày sai định dạng"
+        />
+        <KeyboardDateTimePicker
+          id="date-picker-dialog"
+          label="Ngày Tạo Đến"
+          format="dd-MM-yyyy hh:mm"
+          value={endDate}
+          onChange={handleEndDateChange}
+          KeyboardButtonProps={{
+            "aria-label": "change date",
+          }}
+          className="text-field"
+          invalidDateMessage="Ngày sai định dạng"
+        />
+        <Button variant="contained" onClick={onSearch}>Tìm kiếm</Button>
+        <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
+         </Typography>
         <TableContainer>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
@@ -71,7 +120,7 @@ const InvoicesContent = () => {
             <TableBody>
               {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}  onClick={(e) => navigate("/invoices/"+row["id"])}>
                     {columns.map((column) => {
                       const value = row[column.id];
                       if (column.id == 'car') {

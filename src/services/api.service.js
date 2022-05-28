@@ -1,7 +1,6 @@
 import axios from "axios";
 const moment = require('moment')
 const baseApi = "https://4monce5w19.execute-api.us-east-2.amazonaws.com/api/";
-
 export default {
     auth(url = baseApi + "auth/") {
         return {
@@ -56,6 +55,12 @@ export default {
                     toDate: moment(param.toDate).format("YYYY-MM-DD[T]HH:mm:ss.SSS[Z]"),
                     page: param.page,
                     size: param.size,
+                    name: param.name,
+                    model: param.model,
+                    seats: param.seats,
+                    brand: param.brand,
+                    transmission: param.transmission,
+                    engine: param.engine,
                 },
             }),
         
@@ -65,8 +70,49 @@ export default {
                   Accept: "application/json",
                 }
             }),
+            createVote: (id,requestBody) =>
+            axios.post(url + "/"+ id +"/vote", requestBody, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `${localStorage.getItem("jwt")}`,
+                  },
+            }),
+            getVote: (id) =>
+            axios.get(url +"/"+ id +"/vote", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `${localStorage.getItem("jwt")}`,
+                  },
+            }),
         }
     },
+    brands(url = baseApi + "brands") {
+        return {
+        brandList: () => axios.get(url),
+        };
+    },
+    message(url = baseApi + "messages/") {
+        return {
+          getMessages: () =>
+            axios.get(url , {
+              headers: { Authorization: localStorage.getItem("jwt") },
+            }),
+        getMessagesSelf: () =>
+            axios.get(url+"self" , {
+              headers: { Authorization: localStorage.getItem("jwt") },
+            }),
+          getMessageByUserId: (id) =>
+            axios.get(url + id , {
+              headers: { Authorization: localStorage.getItem("jwt") },
+            }),
+          sendMess: (id, requestBody) =>
+            axios.post(url + id, requestBody, {
+              headers: { Authorization: localStorage.getItem("jwt") },
+            }),
+        };
+      },
     invoices(url = baseApi + "invoices") {
         return {
             createInvoice: (requestBody) => axios.post(url, {
@@ -88,8 +134,19 @@ export default {
                   Authorization: `${localStorage.getItem("jwt")}`,
                 },
                 params: {
-                    
+                    size: 999,
+                    fromDate: moment(param.fromDate).format("YYYY-MM-DD[T]HH:mm:ss.SSS[Z]"),
+                    toDate: moment(param.toDate).format("YYYY-MM-DD[T]HH:mm:ss.SSS[Z]"),
                 },
+            }),
+            getSelfInvoiceId: (id) => 
+                axios.get(url+"/self/"+id, {
+                headers: {
+                  "Content-Type": "application/json",
+                  Accept: "application/json",
+                  Authorization: `${localStorage.getItem("jwt")}`,
+                },
+               
             }),
         }
     }
