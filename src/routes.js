@@ -21,6 +21,8 @@ import Help from "./pages/help/Help";
 import CarInfo from "./pages/carInfo/CarInfo";
 import InvoiceInfo from "./pages/invoiceInfo/InvoiceInfo";
 import MessagePage from "./pages/message/MessagePage";
+import IssueInvoices from "./pages/issueInvoice/IssueInvoice";
+import IssueInvoiceInfo from "./pages/issueInvoiceInfo/IssueInvoiceInfo";
 
 const Router = () => {
   return useRoutes([
@@ -94,6 +96,16 @@ const Router = () => {
       path: "/invoices/:id",
       element: <MainLayout />,
       children: [{ path: "", element: <InvoiceInfo/> }],
+    },
+    {
+      path: "/issues",
+      element: <MainLayout />,
+      children: [{ path: "", element: <IssueInvoices/> }],
+    },
+    {
+      path: "/issues/:id",
+      element: <MainLayout />,
+      children: [{ path: "", element: <IssueInvoiceInfo/> }],
     },
     {
       path: "/messages",

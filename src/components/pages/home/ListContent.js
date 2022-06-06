@@ -18,15 +18,9 @@ import "./ListContent.scss";
 import { newSelect } from "../../../actions/invoices.action";
 import { onLoadingTrue } from "../../../actions/user.action";
 const columns = [
-  { id: 'name', label: 'Tên', minWidth: 10 },
-  { id: 'brand', label: 'Hãng xe', minWidth: 10 },
-  { id: 'model', label: 'Mẫu', minWidth: 10 },
-  { id: 'licensePlate', label: 'Biển số', minWidth: 10 },
-  { id: 'transmission', label: 'Hộp số', minWidth: 10 },
-  { id: 'engineType', label: 'Nhiên liệu', minWidth: 10 },
-  { id: 'seats', label: 'Số ghế', minWidth: 10 },
-  { id: 'image', label: 'Hình ảnh', minWidth: 10 },
-  { id: 'price', label: 'Giá tiền', minWidth: 10, format: (value) => value.toLocaleString('vi-VN') + "đ",},
+  { id: 'image', label: 'Hình ảnh', minWidth: 10 ,align: "center"},
+  { id: 'name', label: 'Thông tin', minWidth: 10 },
+  { id: 'price', label: 'Giá tiền/Giờ', minWidth: 10, format: (value) => value.toLocaleString('vi-VN') + "đ/giờ",},
   { id: 'id', label: '', minWidth: 10 },
 
 
@@ -39,7 +33,8 @@ const ListContent = () => {
   const data = useSelector((state) => state.cars.listSearchCars);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
+  const listEngineType = {"GAS":"Xăng","ELECTRICITY":"Điện"};
+  const listTransmissionType = {"MANUAL":"Thủ công","AUTOMATIC":"Tự động"};
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -80,15 +75,40 @@ const ListContent = () => {
               <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                 {columns.map((column) => {
                   const value = row[column.id];
-                  if (column.id == 'brand') {
+                  if (column.id == 'name') {
                     return (
                       <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value.name) : value.name}
+                         <h2>
+                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                        </h2>
+                        <div>
+                        <label>
+                          Mẫu xe: {row["model"]}
+                        </label>
+                        </div>
+                        <div>
+                        <label>
+                          Hãng xe: {row["brand"].name}
+                        </label>
+                        </div>
+                        <div>
+                        <label>
+                          Nhiên liệu: {listEngineType[row["engineType"]]}
+                        </label>
+                        </div>
+                        <label>
+                          Bộ chuyển số: {listTransmissionType[row["transmission"]]}
+                        </label>
+                        <div>
+                        <label>
+                          Số xe: {row["licensePlate"]}
+                        </label>
+                        </div>
                       </TableCell>
                     );
                   }else if (column.id == 'image') {
                     return (
-                      <TableCell key={column.id} align={column.align}>
+                      <TableCell key={column.id} align="center">
                         <img src={value} width="200"></img>
                       </TableCell>
                     );
@@ -105,7 +125,9 @@ const ListContent = () => {
                   else{
                     return (
                       <TableCell key={column.id} align={column.align}>
+                        <h2>
                         {column.format && typeof value === 'number' ? column.format(value) : value}
+                        </h2>
                       </TableCell>
                     );
                   }
@@ -124,6 +146,7 @@ const ListContent = () => {
       page={page}
       onPageChange={handleChangePage}
       onRowsPerPageChange={handleChangeRowsPerPage}
+      labelRowsPerPage="Số xe mỗi trang"
     />
   </Paper>
   );

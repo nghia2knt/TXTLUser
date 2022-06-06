@@ -1,4 +1,4 @@
-import { Avatar, Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@material-ui/core";
+import { Avatar, Button, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@material-ui/core";
 import { KeyboardDateTimePicker } from "@material-ui/pickers";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,46 +6,48 @@ import { useNavigate } from "react-router-dom";
 import { getCar } from "../../../actions/cars.action";
 import { getSelfInvoices } from "../../../actions/invoices.action";
 import * as actions from "../../../actions/user.action";
-import "./InvoicesContent.scss";
+import "./IssueInvoicesContent.scss";
+import apiService from "../../../services/api.service";
+import { Autocomplete } from "@material-ui/lab";
 
 const columns = [
     { id: 'id', label: 'Mã', minWidth: 10 },
     { id: 'createAt', label: 'Ngày tạo', minWidth: 10 },
-    { id: 'startTime', label: 'Bắt đầu', minWidth: 10 },
-    { id: 'endTime', label: 'Kết thúc', minWidth: 10 },
-    { id: 'carName', label: 'Tên xe', minWidth: 10 },
-    { id: 'carLicensePlate', label: 'Biển số xe', minWidth: 10 },
-    { id: 'car', label: 'Hình ảnh', minWidth: 10 },
-    { id: 'totalPrice', label: 'Giá tiền', minWidth: 10, format: (value) => value.toLocaleString('vi-VN') + "đ",},
-    { id: 'statusType', label: 'Trạng thái', minWidth: 10 },
+    { id: 'totalPrice', label: 'Tổng Tiền', minWidth: 10, format: (value) => value.toLocaleString('vi-VN') + "đ", },
+    { id: 'isPaid', label: 'Thanh Toán', minWidth: 10 },
   ];
   
-const InvoicesContent = () => {
+const IssueInvoicesContent = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const userProfile = useSelector((state) => state.user.userProfile);
-  const data = useSelector((state) => state.invoices.selfInvoices);
+  const [data,setData] = useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [beginDate, setBeginDate] = useState(Date.now()-(72000000*7))
   const [endDate, setEndDate] = useState(Date.now());
-  const mapValue = {
-    "WAIT":"Đang chờ xác nhận",
-    "CONFIRMED":"Đã được xác nhận",
-    "LATE":"Chậm trả xe",
-    "REQ_REFUND":"Yêu cầu hoàn tiền",
-    "REFUNDED":"Đã hoàn tiền",
-    "DONE":"Thuê hoàn tất",
-    "CANCEL":""
-  }
+  const [status, setStatus] = useState({name: "",value: null});
+
+  const statusType = [{name: "Chưa Thanh Toán",value:"false"}, {name: "Đã Thanh Toán",value: "true"}];
+
   useEffect(() => {
     if (localStorage.getItem('jwt')) {
       dispatch(actions.getUserByJWT())
+      setStatus({name: "Chưa Thanh Toán",value: "false"});
+
       const param = {
-        fromDate: beginDate,
-        toDate: endDate,
+        isPaid: false
       }
-      dispatch(getSelfInvoices(param))
+
+      apiService
+      .issues()
+      .getSelfIssueInvoices(param)
+      .then((response) => {
+          setData(response.data.data)
+      })
+      .catch((error) => {
+          alert(error.response.data.message)
+      })
     }else {
       navigate("/login")
     }
@@ -67,14 +69,26 @@ const InvoicesContent = () => {
   const handleEndDateChange = (date) => {
     setEndDate(date);
   };
+  
 
-  const onSearch = () => {
-    const param = {
-      fromDate: beginDate,
-      toDate: endDate,
-    }
-    dispatch(actions.onLoadingTrue())
-    dispatch(getSelfInvoices(param))
+  const onSearch = (value) => {
+      setStatus(value);
+      var isPaid = null;
+      if (value!=null) {
+        isPaid = value.value
+      }
+      const param = {
+        isPaid: isPaid
+      }
+      apiService
+      .issues()
+      .getSelfIssueInvoices(param)
+      .then((response) => {
+          setData(response.data.data)
+      })
+      .catch((error) => {
+          alert(error.response.data.message)
+      })
   }
 
   return (
@@ -82,33 +96,28 @@ const InvoicesContent = () => {
       {userProfile && data &&(
         <Paper>
           <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
-                          Danh Sách Lịch Đặt Thuê Xe
+                          Danh Sách Hóa Đơn Phụ Thu
           </Typography>
-          <KeyboardDateTimePicker
-          id="date-picker-dialog"
-          label="Ngày Tạo Từ"
-          format="dd-MM-yyyy hh:mm"
-          value={beginDate}
-          onChange={handleBeginDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
-          className="text-field"
-          invalidDateMessage="Ngày sai định dạng"
-        />
-        <KeyboardDateTimePicker
-          id="date-picker-dialog"
-          label="Ngày Tạo Đến"
-          format="dd-MM-yyyy hh:mm"
-          value={endDate}
-          onChange={handleEndDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
-          className="text-field"
-          invalidDateMessage="Ngày sai định dạng"
-        />
-        <Button variant="contained" onClick={onSearch}>Tìm kiếm</Button>
+          <Grid item xs={2}>
+          <Autocomplete
+            id="combo-box-status"
+            value={status}
+            onChange={(event, value) => {
+
+              onSearch(value);
+            }}
+            options={statusType}
+            getOptionLabel={(option) => option.name}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                className="text-field"
+                margin="dense"
+                label="Trạng thái"
+              />
+            )}
+          />
+        </Grid>
         <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
          </Typography>
         <TableContainer>
@@ -129,7 +138,7 @@ const InvoicesContent = () => {
             <TableBody>
               {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}  onClick={(e) => navigate("/invoices/"+row["id"])}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}  onClick={(e) => navigate("/issues/"+row["id"])}>
                     {columns.map((column) => {
                       const value = row[column.id];
                       if (column.id == 'car') {
@@ -139,10 +148,17 @@ const InvoicesContent = () => {
                           </TableCell>
                         );
                       }else 
-                      if (column.id == 'statusType') {
+                      if (column.id == 'isPaid' && value) {
                         return (
                           <TableCell key={column.id} align={column.align}>
-                             {column.format && typeof value === 'number' ? column.format(value) : mapValue[value]}
+                             Đã thanh toán
+                          </TableCell>
+                        );
+                      } else
+                      if (column.id == 'isPaid' && !value) {
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                             Chưa thanh toán
                           </TableCell>
                         );
                       }
@@ -168,7 +184,7 @@ const InvoicesContent = () => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Lịch thuê mỗi trang"
+          labelRowsPerPage="Hóa đơn mỗi trang"
 
         />
       </Paper>
@@ -177,4 +193,4 @@ const InvoicesContent = () => {
   );
 };
 
-export default InvoicesContent;
+export default IssueInvoicesContent;

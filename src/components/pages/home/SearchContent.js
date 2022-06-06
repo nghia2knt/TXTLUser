@@ -26,14 +26,14 @@ const SearchContent = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const error = useSelector((state) => state.cars.error);
-  const [engineTypeValue, setEngineTypeValue] = useState(null);
-  const [transmissionValue, setTransmissionValue] = useState(null);
+  const [engineTypeValue, setEngineTypeValue] = useState({name:"",value:""});
+  const [transmissionValue, setTransmissionValue] = useState({name:"",value:""});
   const [brandValue, setBrandValue] = useState(null);
   const [nameValue, setNameValue] = useState(null);
   const [modelValue, setModelValue] = useState(null);
   const [seatsValue, setSeatsValue] = useState(null);
-  const listEngineType = ["GAS", "ELECTRICITY"];
-  const listTransmissionType = ["MANUAL", "AUTOMATIC"];
+  const listEngineType = [{name:"Xăng",value:"GAS"}, {name:"Điện",value:"ELECTRICITY"}];
+  const listTransmissionType = [{name:"Thủ công",value:"MANUAL"}, {name:"Tự động",value:"AUTOMATIC"}];
 
   useEffect(() => {
     if (beginDate==null) {
@@ -67,6 +67,12 @@ const SearchContent = () => {
     if (brandValue != null) {
       brandInput = brandValue.id
     }
+    if (transmissionValue == null) {
+      setTransmissionValue({name:"",value:""})
+    }
+    if (engineTypeValue == null) {
+      setEngineTypeValue({name:"",value:""})
+    }
     const param = {
       fromDate: beginDate,
       toDate: endDate,
@@ -76,8 +82,8 @@ const SearchContent = () => {
       model: modelValue,
       seats: seatsValue,
       brand:  brandInput,
-      transmission: transmissionValue,
-      engine: engineTypeValue,
+      transmission: transmissionValue.value,
+      engine: engineTypeValue.value,
     }
     dispatch(newSelect(param))
     dispatch(onLoadingTrue())
@@ -149,7 +155,7 @@ const SearchContent = () => {
                   setEngineTypeValue(value);
                 }}
                 options={listEngineType}
-                getOptionLabel={(option) => option.toLowerCase()}
+                getOptionLabel={(option) => option.name}
                 fullWidth
                 renderInput={(params) => (
                   <TextField
@@ -159,7 +165,7 @@ const SearchContent = () => {
                   />
                 )}
               />
-            <label>Loại Hộp Số</label>
+            <label>Bộ Chuyển số</label>
             <Autocomplete
                 id="combo-box-transmission"
                 value={transmissionValue}
@@ -167,7 +173,7 @@ const SearchContent = () => {
                   setTransmissionValue(value);
                 }}
                 options={listTransmissionType}
-                getOptionLabel={(option) => option.toLowerCase()}
+                getOptionLabel={(option) => option.name}
                 fullWidth
                 renderInput={(params) => (
                   <TextField

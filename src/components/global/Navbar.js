@@ -119,6 +119,14 @@ const ResponsiveAppBar = () => {
                   <Typography textAlign="center">Lịch Đặt</Typography>
                 </MenuItem>
                 )}
+
+                {userProfileHeader && (
+                <MenuItem key="phu-thu" onClick={() => {
+                  moveToPage("/issues");
+                }}>
+                  <Typography textAlign="center">Hóa Đơn Phụ Thu</Typography>
+                </MenuItem>
+                )}
                 <MenuItem key="huong-dan" onClick={() => {
                   moveToPage("/help");
                 }}>
@@ -165,6 +173,17 @@ const ResponsiveAppBar = () => {
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 Lịch Đặt
+              </Button>
+              <Button
+                variant="text"
+                key="phu-thu"
+                onClick={() => {
+                  moveToPage("/issues");
+                }}
+                color="inherit"
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Hóa Đơn Phụ Thu
               </Button>
               <Button
                 variant="text"

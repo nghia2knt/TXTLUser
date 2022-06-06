@@ -115,6 +115,10 @@ export default {
       },
     invoices(url = baseApi + "invoices") {
         return {
+            updateStatus: (id,requestBody) =>
+            axios.put(url +"/refund/"+ id , requestBody, {
+              headers: { Authorization: localStorage.getItem("jwt") },
+            }),
             createInvoice: (requestBody) => axios.post(url, {
                 startTime: moment(requestBody.startTime).format("YYYY-MM-DD[T]HH:mm:ss.SSS[Z]"),
                 endTime: moment(requestBody.endTime).format("YYYY-MM-DD[T]HH:mm:ss.SSS[Z]"),
@@ -149,5 +153,45 @@ export default {
                
             }),
         }
-    }
+    },
+    issues(url = baseApi + "issues") {
+      return {
+          getSelfIssueInvoices: (param) => 
+              axios.get(url+"/self", {
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `${localStorage.getItem("jwt")}`,
+              },
+              params: {
+                  isPaid: param.isPaid
+              },
+          }),
+          getSelfIssueInvoiceId: (id) => 
+              axios.get(url+"/self/"+id, {
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `${localStorage.getItem("jwt")}`,
+              },
+             
+          }),
+      }
+  },
+  template(url = "https://rest.apitemplate.io/v2/create-pdf") {
+    return {
+      createPDF: (requestBody) => axios.post(url+"?template_id=b7577b2b2e003e52", requestBody, {
+        headers: {
+          "Content-Type": "application/json",
+            Authorization: "Token 76bcNzQ0MTo0NDcwOmlMQ2JOS0Ixa290UnVLT0g" ,
+        },
+    }),
+    createPDFIssue: (requestBody) => axios.post(url+"?template_id=93a77b2b2e041ff6", requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+          Authorization: "Token 76bcNzQ0MTo0NDcwOmlMQ2JOS0Ixa290UnVLT0g" ,
+      },
+  }),
+    };
+  },
 };

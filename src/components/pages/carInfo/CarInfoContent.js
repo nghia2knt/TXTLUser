@@ -38,21 +38,37 @@ const columns = [
     { id: 'content', label: 'Nội dung', minWidth: 30 },
   ];
 
+const countPoint = (list) => {
+      var point = 0
+      console.log(list.toString())
+      if (list!=null) {
+        list.map((element) => {
+          console.log("log nè")
+          point = point + element.point
+        })
+        point = point / list.length
+      }
+      console.log(point)
+      return point
+}  
+
 const CarInfoContent = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [carInfo,setCarInfo] = useState('');
   const [voteContent,setVoteContent] = useState('');
-  const [votePoint,setVotePoint] = useState('');
+  const [votePoint,setVotePoint] = useState(10);
   const [votes, setVotes] = useState([])
   const error = useSelector((state) => state.invoices.error);
   const param = useParams()
+  const [totalPoint,setTotalPoint] = useState(10);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const time = useSelector((state) => state.invoices.time);
   const duration = useSelector((state) => state.invoices.duration);
   const userProfile = useSelector((state) => state.user.userProfile);
-
+  const listEngineType = {"GAS":"Xăng","ELECTRICITY":"Điện"};
+  const listTransmissionType = {"MANUAL":"Thủ công","AUTOMATIC":"Tự động"};
   useEffect(() => {
     if (localStorage.getItem('jwt')) {
         dispatch(actions.getUserByJWT())
@@ -62,6 +78,8 @@ const CarInfoContent = () => {
     .getVote(param.id)
     .then((response) => {
         setVotes(response.data.data)
+        const total = countPoint(response.data.data)
+        setTotalPoint(total)
     })
     .catch((error) => {
         alert(error.response.data.message)
@@ -118,6 +136,7 @@ const CarInfoContent = () => {
         .getVote(param.id)
         .then((response) => {
             setVotes(response.data.data)
+            setTotalPoint(countPoint(votes))
         })
         .catch((error) => {
              alert(error.response.data.message)
@@ -142,8 +161,8 @@ const CarInfoContent = () => {
              <TextField id="seats" label="Số ghế" className="text-field" fullWidth value={carInfo.seats} />
              <TextField id="price" label="Giá tiền (giờ)" className="text-field" fullWidth value={carInfo.price} />
              <TextField id="brand" label="Hãng xe" className="text-field" fullWidth value={carInfo.brand.name} />
-             <TextField id="engineType" label="Nhiên liệu" className="text-field" fullWidth value={carInfo.engineType} />
-             <TextField id="transmission" label="Hộp số" className="text-field" fullWidth value={carInfo.transmission} />
+             <TextField id="engineType" label="Nhiên liệu" className="text-field" fullWidth value={listEngineType[carInfo.engineType]} />
+             <TextField id="transmission" label="Bộ chuyển số" className="text-field" fullWidth value={listTransmissionType[carInfo.transmission]} />
              
                 
         </div>    
@@ -246,7 +265,10 @@ const CarInfoContent = () => {
         </Typography>
        
         <Typography variant="h6" gutterBottom>
-        LƯỢT ĐÁNH GIÁ: {votes.length}
+        ĐIỂM SỐ: {totalPoint} / 10
+      </Typography>
+      <Typography>
+        LƯỢT ĐÁNH GIÁ:  {votes.length} 
       </Typography>
             <TableContainer style={{ height: 400, width: '100%' }}>
             <Table stickyHeader aria-label="sticky table">
@@ -298,8 +320,9 @@ const CarInfoContent = () => {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Lượt đánh giá mỗi trang"
             />
-            {
+            {/* {
                 userProfile && (
             <div>
             <Typography variant="h6" gutterBottom>
@@ -313,7 +336,7 @@ const CarInfoContent = () => {
             </Typography>
             </div>
                 )
-            }
+            } */}
             
 
         </Paper>
